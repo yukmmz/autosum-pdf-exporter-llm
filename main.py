@@ -1,9 +1,9 @@
 import os
 import time
 from pathlib import Path
-import sumpaper as sp
 import argparse
 
+import sumpaper as sp
 
 
 def test():
@@ -36,15 +36,18 @@ def test():
 
 def arg_parser():
     parser = argparse.ArgumentParser(description='Summarize PDFs in a folder')
-    parser.add_argument('--input-dir', '-i', default='./data/input', help='Input directory containing PDFs')
+    parser.add_argument('--input-dir', '-i', default='./data', help='Input directory containing PDFs')
     parser.add_argument('--output-dir', '-o', default=None, help='Output directory for summaries (defaults to <input_dir>/output)')
     parser.add_argument('--prompt-path', '-p', default='./data/prompt_sample.md', help='Path to prompt file')
-    parser.add_argument('--model-name', '-m', default='gemini-2.5-flash', help='Model name')
+    parser.add_argument('--model-name', '-m', default=None, help='Model name')
     parser.add_argument('--max-loop', '-n', type=int, default=3, help='Max loop count')
+
+    # --list-models オプションがあれば、モデル一覧を表示して終了
+    parser.add_argument('--list-models', action='store_true', help='List available models and exit')
     return parser.parse_args()
 
 
-def _main():
+def _main(args):
     """- 複数pdfを扱うループを作る
   - 指定されたフォルダの全てのpdfのパスを、以下のようなリストに入れる
     state_arr = [[pdf_path1, False], [pdf_path2, False], ...] # Falseは未処理を意味する
@@ -57,7 +60,6 @@ def _main():
     """
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
-    args = arg_parser()
 
     input_dir = Path(args.input_dir)
     output_dir = Path(args.output_dir) if args.output_dir else (input_dir / "output")
@@ -66,6 +68,7 @@ def _main():
     max_loop = args.max_loop
 
 
+    # debug = True
     debug = False
 
     if not output_dir.exists():
@@ -87,8 +90,19 @@ def _main():
         for i, (pdf_path, done) in enumerate(state_arr):
             if done:
                 continue
-            print(f"--- Processing {pdf_path.name} ---")
-            output_pdf_path = output_dir / f"{pdf_path.stem}_summary.pdf"
+            print(f"\n--- Processing {pdf_path.name} ---")
+
+
+            # 特殊文字による UnicodeEncodeError を避けるため、表示名を安全なものに差し替える
+            # .encode('ascii', 'ignore') で非ASCII文字を除去し、デコードして文字列に戻す
+            safe_display_name = Path(pdf_path).name.encode('ascii', 'ignore').decode('ascii')
+            if not safe_display_name: # もし全文字消えてしまった場合のフォールバック
+                safe_display_name = "uploaded_paper.pdf"
+            if safe_display_name != pdf_path.name:
+                pdf_path = pdf_path.rename(pdf_path.parent / safe_display_name)
+                print(f"Renamed file to avoid non-ascii encoding issues: {safe_display_name}")
+
+            output_pdf_path = output_dir / f"_summary_{pdf_path.stem}.pdf"
            
             if debug:
                 sp.summarize_pdf_gemini(
@@ -100,7 +114,7 @@ def _main():
                     verbose=True,
                 )
                 state_arr[i][1] = True  # Mark as done
-                print(f"Processed {pdf_path.name} successfully.")
+                print(f"(^_^) Successfully processed {pdf_path.name}.")
             else:
                 try:
                     sp.summarize_pdf_gemini(
@@ -112,18 +126,28 @@ def _main():
                         verbose=False,
                     )
                     state_arr[i][1] = True  # Mark as done
-                    print(f"Processed {pdf_path.name} successfully.")
+                    print(f"(^_^) Successfully processed {pdf_path.name}.")
                 except Exception as e:
-                    print(f"Error processing {pdf_path.name}: {e}")
+                    print(f"(xxx) Error processing {pdf_path.name}: {e}")
                     all_done = False
             
             time.sleep(5)  # 少し待つ
         if all_done:
             print("All papers processed successfully.")
             break
-    
+    if not all_done:
+        print("Following papers could not be processed within the max loop limit.")
+        # 未処理の論文を表示
+        for pdf_path, done in state_arr:
+            if not done:
+                print(f"- {pdf_path.name}")
 
 
 
 if __name__ == "__main__":
-    _main()
+    
+    args = arg_parser()
+    if args.list_models:
+        sp.list_available_models()
+    else:
+        _main(args)
