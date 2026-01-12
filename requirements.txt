@@ -1,0 +1,4 @@
+pdfkit
+markdown
+python-dotenv
+google-genai
