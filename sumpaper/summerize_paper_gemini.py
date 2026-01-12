@@ -7,7 +7,6 @@ from dotenv import load_dotenv
 
 from google import genai
 from google.genai import types
-from markdown_pdf import MarkdownPdf, Section  # 追加
 
 __all__ = [
     'summarize_pdf_gemini', 
@@ -94,7 +93,7 @@ def summarize_pdf_gemini(
     if verbose:
         print(f"Uploading {pdf_path}...")
     file_upload = client.files.upload(file=pdf_path)
-    
+
     # 3. 処理完了待ち
     if verbose:
         print(f"Processing file: {file_upload.name}")
@@ -139,20 +138,10 @@ def summarize_pdf_gemini(
     # --- 後半：markdown-pdfによるPDF化 ---
     if verbose: print(f"Exporting to {Path(output_pdf_path).absolute()}...")
     
-    # md2pdf_markdown_pdf(markdown_text, output_pdf_path)
     md2pdf_pdfkit(markdown_text, output_pdf_path)
     
     return
 
-
-def md2pdf_markdown_pdf(markdown_text, output_path):
-    pdf = MarkdownPdf(toc_level=2)
-    # SectionにMarkdownテキストを渡してPDFの構成要素にする
-    pdf.add_section(Section(markdown_text))
-    
-    # PDFファイルとして保存
-    pdf.save(output_path)
-    return
 
 def md2pdf_pdfkit(markdown_text, output_path):
     # HTMLへ変換
