@@ -1,7 +1,7 @@
 
-# SumPaper
+# autosum-pdf-exporter-llm
 
-簡単な論文要約自動化ツールです。指定したフォルダ内のPDFをGoogle Gemini（GenAI）で要約し、MarkdownからPDFを生成します。  
+簡単なpdf要約自動化ツールです。指定したフォルダ内のPDFをGoogle Gemini（GenAI）で要約し、MarkdownからPDFを生成します。  
 指定したフォルダ内の各pdfファイルに対して、指定したプロンプトを用いて要約を行い、結果をPDFとして保存します。  
 （pdf アップロード → プロンプト入力 → 要約生成 → PDF出力）x （pdf 数） の処理を自動化します。  
 
