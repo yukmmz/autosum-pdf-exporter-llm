@@ -1,4 +1,5 @@
 .venv/
 sumpaper/__pycache__/
 BU/
+data/output/
 .env
