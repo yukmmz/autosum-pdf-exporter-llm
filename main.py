@@ -5,6 +5,8 @@ import argparse
 
 import sumpaper as sp
 
+# DEBUG = True
+DEBUG = False
 
 def test():
     
@@ -32,8 +34,6 @@ def test():
     except Exception as e:
         print(f"Error: {e}")
 
-
-
 def arg_parser():
     parser = argparse.ArgumentParser(description='Summarize PDFs in a folder')
     parser.add_argument('--input-dir', '-i', default='./data', help='Input directory containing PDFs')
@@ -46,7 +46,6 @@ def arg_parser():
     # --list-models オプションがあれば、モデル一覧を表示して終了
     parser.add_argument('--list-models', action='store_true', help='List available models and exit')
     return parser.parse_args()
-
 
 def _main(args):
     """- 複数pdfを扱うループを作る
@@ -68,10 +67,6 @@ def _main(args):
     model_name = args.model_name
     max_loop = args.max_loop
     font_size = args.font_size
-
-
-    # debug = True
-    debug = False
 
     if not output_dir.exists():
         output_dir.mkdir(parents=True, exist_ok=True)
@@ -106,7 +101,7 @@ def _main(args):
 
             output_pdf_path = output_dir / f"_summary_{pdf_path.stem}.pdf"
            
-            if debug:
+            if DEBUG:
                 sp.summarize_pdf_gemini(
                     pdf_path, 
                     prompt_text, 
