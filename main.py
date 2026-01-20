@@ -41,6 +41,7 @@ def arg_parser():
     parser.add_argument('--prompt-path', '-p', default='./data/prompt_sample.md', help='Path to prompt file')
     parser.add_argument('--model-name', '-m', default=None, help='Model name')
     parser.add_argument('--max-loop', '-n', type=int, default=3, help='Max loop count')
+    parser.add_argument('--font-size', '-f', type=int, default=30, help='Font size for PDF output')
 
     # --list-models オプションがあれば、モデル一覧を表示して終了
     parser.add_argument('--list-models', action='store_true', help='List available models and exit')
@@ -66,6 +67,7 @@ def _main(args):
     prompt_path = args.prompt_path
     model_name = args.model_name
     max_loop = args.max_loop
+    font_size = args.font_size
 
 
     # debug = True
@@ -110,8 +112,9 @@ def _main(args):
                     prompt_text, 
                     output_pdf_path, 
                     model_name=model_name,
-                    show_md=False,
+                    show_md=True,
                     verbose=True,
+                    font_size=font_size,
                 )
                 state_arr[i][1] = True  # Mark as done
                 print(f"(^_^) Successfully processed {pdf_path.name}.")
@@ -124,6 +127,7 @@ def _main(args):
                         model_name=model_name,
                         show_md=False,
                         verbose=False,
+                        font_size=font_size,
                     )
                     state_arr[i][1] = True  # Mark as done
                     print(f"(^_^) Successfully processed {pdf_path.name}.")

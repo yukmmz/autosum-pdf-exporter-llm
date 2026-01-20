@@ -56,13 +56,14 @@ def list_available_models(required_actions=['generateContent', 'batchGenerateCon
     
 
 def summarize_pdf_gemini(
-        pdf_path, 
-        prompt_text, 
-        output_pdf_path, 
-        model_name=None,
-        verbose=False,
-        show_md=False,
-        ):
+    pdf_path, 
+    prompt_text, 
+    output_pdf_path, 
+    model_name=None,
+    verbose=False,
+    show_md=False,
+    font_size=30,
+    ):
     
 
     # --- model_nameの自動選択 ---
@@ -138,12 +139,12 @@ def summarize_pdf_gemini(
     # --- 後半：markdown-pdfによるPDF化 ---
     if verbose: print(f"Exporting to {Path(output_pdf_path).absolute()}...")
     
-    md2pdf_pdfkit(markdown_text, output_pdf_path)
+    md2pdf_pdfkit(markdown_text, output_pdf_path, font_size=font_size)
     
     return
 
 
-def md2pdf_pdfkit(markdown_text, output_path):
+def md2pdf_pdfkit(markdown_text, output_path, font_size=30):
     # HTMLへ変換
     html_body = markdown.markdown(markdown_text)
     
@@ -153,7 +154,7 @@ def md2pdf_pdfkit(markdown_text, output_path):
     <head>
         <meta charset="utf-8">
         <style>
-            body {{ font-family: "MS Mincho", "Hiragino Mincho ProN", serif; }}
+            body {{ font-family: "MS Mincho", "Hiragino Mincho ProN", serif; font-size: {font_size}pt; }}
         </style>
     </head>
     <body>{html_body}</body>
@@ -185,16 +186,17 @@ def test():
 
 
 def test_md2pdf_pdfkit():
-    filepath = "../data/markdown_text.md"
+    # filepath = "../data/markdown_text.md"
+    filepath = "../BU/md_sample.md"
     with open(filepath, 'r', encoding='utf-8') as f:
         markdown_text = f.read()
     output_pdf_path = Path(filepath).parent / "markdown_output.pdf"
-    md2pdf_pdfkit(markdown_text, output_pdf_path)
+    md2pdf_pdfkit(markdown_text, output_pdf_path, font_size=30)
 
 if __name__ == "__main__":
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
-    list_available_models(required_actions=['generateContent', 'batchGenerateContent'])
+    # list_available_models(required_actions=['generateContent', 'batchGenerateContent'])
 
     # test()
     # test_markdown_pdf()
-    # test_md2pdf_pdfkit()
+    test_md2pdf_pdfkit()
