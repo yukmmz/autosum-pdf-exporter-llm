@@ -1,4 +1,3 @@
-
 # autosum-pdf-exporter-llm
 
 簡単なpdf要約自動化ツールです。指定したフォルダ内のPDFをGoogle Gemini（GenAI）で要約し、MarkdownからPDFを生成します。  
@@ -53,7 +52,8 @@
 ## 注意事項 / トラブルシューティング
 - `.env` に `GOOGLE_API_KEY` が未設定だと起動時にエラーになります。
 - `WKHTMLTOPDF_PATH` は実行環境の実際のパスに合わせてください。
-- 'The model is overloaded. Please try again later.' というエラーが良く出るので、`--max-loop` をある程度大きくして繰り返しトライさせるか、時間を空けて再度実行してください（ただ、リクエスト数が多いとAPIキーの制限に引っかかる可能性があります）。
+- 'The model is overloaded. Please try again later.' というエラーが良く出ます。　　
+  `--max-loop` をある程度大きくして繰り返しトライさせるか、時間を空けて再度実行してください（ただ、リクエスト数が多いとAPIキーの制限に引っかかる可能性があります）。
 
 
 ## to be improved
