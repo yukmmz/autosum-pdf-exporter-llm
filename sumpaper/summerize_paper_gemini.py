@@ -161,6 +161,28 @@ def md2pdf_pdfkit(markdown_text, output_path, font_size=30):
     </html>
     """
     
+    # 1. 英語の柔らかいフォント（HelveticaやArialなど）を先に記述
+    # 2. その後に日本語フォント（明朝体やゴシック体）を記述
+    # line-height: フォントサイズの何倍の行間をとるか
+    full_html = f"""
+    <html>
+    <head>
+        <meta charset="utf-8">
+        <style>
+            body {{ 
+                font-family: "Helvetica Neue", "Helvetica", "Arial", "Verdana", "Hiragino Sans", "Meiryo", "MS Gothic", sans-serif;
+                line-height: 1.4;
+                font-size: {font_size}pt;
+            }}
+            /* 数式やコードをより柔らかくしたい場合 */
+            code, pre {{ font-family: "Consolas", "Courier New", monospace; }}
+        </style>
+    </head>
+    <body>{html_body}</body>
+    </html>
+    """
+
+
     # PDF保存 (wkhtmltopdfのインストールが必要です)
     config = pdfkit.configuration(wkhtmltopdf=PATH_WKHTMLTOPDF)
     # pdfkit.from_string(full_html, output_path)
